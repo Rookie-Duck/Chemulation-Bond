@@ -3,7 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - SAtom
+  - XeAtom
+  - NAtom
+  - OAtom
+  - KAtom
+  - ClAtom
+  - FAtom
+  - HAtom
+  - BAtom
+  - BrAtom
+  - CAtom
   layers:
   - Default
   - TransparentFX
