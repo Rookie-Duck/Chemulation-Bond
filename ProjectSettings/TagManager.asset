@@ -15,6 +15,43 @@ TagManager:
   - BAtom
   - BrAtom
   - CAtom
+  - QDSUIBackplateGradient
+  - QDSUIToggleBorderlessButton
+  - QDSUIToggleSwitch
+  - QDSUITooltip
+  - QDSUISharedThemeColor
+  - QDSUIAccentColor
+  - QDSUIBorderlessButton
+  - QDSUIToggleButton
+  - QDSUISecondaryButton
+  - QDSUIIcon
+  - QDSUITextSecondaryColor
+  - Atom1
+  - Atom2
+  - Atom3
+  - Atom4
+  - Atom5
+  - Atom6
+  - Atom7
+  - Atom8
+  - Atom9
+  - Atom10
+  - Atom11
+  - Atom12
+  - Atom13
+  - Atom14
+  - Atom15
+  - Atom16
+  - Atom17
+  - Atom18
+  - Atom19
+  - Atom20
+  - Atom21
+  - Atom22
+  - Atom23
+  - Atom24
+  - Atom25
+  - Atom26
   layers:
   - Default
   - TransparentFX

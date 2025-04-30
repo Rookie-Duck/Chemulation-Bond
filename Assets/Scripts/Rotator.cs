@@ -4,40 +4,53 @@ using UnityEngine;
 
 public class Rotator : MonoBehaviour
 {
-    public GameObject[] objectsToRotate; // Array to hold the objects to rotate
+    public GameObject objectToRotate; // Single object to rotate
     private float rotationSpeed = 45f; // Speed of rotation in degrees per second
-    private float targetAngle = 0f; // Target angle for rotation
     private float currentAngle = 0f; // Current angle of rotation
 
-    // Method to rotate objects to the left
+    // Reset position and rotation variables
+    public Vector3 resetPosition = new Vector3(-0.970000029f, 1.08000004f, 9.52999973f); // Desired reset position
+    public Quaternion resetRotation = Quaternion.Euler(0, -0.967f, 0); // Desired reset rotation
+
+    // Method to rotate the object to the left
     public void RotateLeft()
     {
-        targetAngle += 15f; // Set target angle to rotate left
-        StartCoroutine(RotateObjects());
+        StartCoroutine(RotateObject(-15f)); // Rotate left by 15 degrees
     }
 
-    // Method to rotate objects to the right
+    // Method to rotate the object to the right
     public void RotateRight()
     {
-        targetAngle -= 15f; // Set target angle to rotate right
-        StartCoroutine(RotateObjects());
+        StartCoroutine(RotateObject(15f)); // Rotate right by 15 degrees
     }
 
-    // Coroutine to smoothly rotate the objects
-    private IEnumerator RotateObjects()
+    // Coroutine to smoothly rotate the object
+    private IEnumerator RotateObject(float angle)
     {
+        float targetAngle = currentAngle + angle; // Calculate the target angle
+
         while (Mathf.Abs(currentAngle - targetAngle) > 0.01f)
         {
             currentAngle = Mathf.MoveTowards(currentAngle, targetAngle, rotationSpeed * Time.deltaTime);
-            foreach (GameObject obj in objectsToRotate)
+            if (objectToRotate != null)
             {
-                if (obj != null)
-                {
-                    obj.transform.rotation = Quaternion.Euler(0, currentAngle, 0);
-                }
+                // Smoothly rotate the object
+                objectToRotate.transform.rotation = Quaternion.Euler(0, currentAngle, 0);
             }
             yield return null; // Wait for the next frame
         }
-        currentAngle = targetAngle; // Snap to the target angle
+
+        currentAngle = targetAngle; // Update currentAngle to the targetAngle
+    }
+
+    // Method to reset the object's position and rotation
+    public void ResetObject()
+    {
+        if (objectToRotate != null)
+        {
+            objectToRotate.transform.position = resetPosition; // Reset position
+            objectToRotate.transform.rotation = resetRotation; // Reset rotation
+            currentAngle = resetRotation.eulerAngles.y; // Update currentAngle to match the reset rotation
+        }
     }
 }
