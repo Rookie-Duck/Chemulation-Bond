@@ -53,17 +53,17 @@ public class Spawner : MonoBehaviour
         // List of tags to destroy
         string[] tagsToDestroy = new string[]
         {
-        "S_Atom",
-        "Xe_Atom",
-        "N_Atom",
-        "O_Atom",
-        "K_Atom",
-        "Cl_Atom",
-        "F_Atom",
-        "H_Atom",
-        "B_Atom",
-        "Br_Atom",
-        "C_Atom"
+        "SAtom",
+        "XeAtom",
+        "NAtom",
+        "OAtom",
+        "KAtom",
+        "ClAtom",
+        "FAtom",
+        "HAtom",
+        "BAtom",
+        "BrAtom",
+        "CAtom"
         };
 
         // Iterate through each tag and destroy the corresponding spheres
