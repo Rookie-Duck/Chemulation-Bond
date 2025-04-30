@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    // Optional: Assign this if you want to use a prefab instead of primitive
     public GameObject spherePrefab;
 
     // Fixed spawn position as per your request
