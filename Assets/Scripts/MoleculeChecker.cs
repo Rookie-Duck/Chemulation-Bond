@@ -1,44 +1,70 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class MoleculeChecker : MonoBehaviour
 {
-    public TMP_Text checkAtomText; // UI TextMeshPro untuk memeriksa atom
-    public TMP_Text checkLocationText; // UI TextMeshPro untuk memeriksa lokasi
+    public AtomSlotTrigger[] allSlots;  // Assign semua 26 slot di sini
+    public TMP_Text checkAtomText;
+    public TMP_Text checkLocationText;
+    public TMP_Text debugText;
 
-    private int hydrogenCount = 0; // Menghitung jumlah HAtom yang terdeteksi
+    public string targetTag1 = "Atom14";
+    public string targetTag2 = "Atom24";
 
-    private void OnTriggerEnter(Collider other)
+    void Update()
     {
-        if (other.CompareTag("HAtom") && other.CompareTag("Atom14") || other.CompareTag("Atom24"))
-        {
-            checkAtomText.text = "Correct";
-            checkLocationText.text = "Correct";
-        }
+        CheckAnswer();
     }
 
-    /*private void OnTriggerExit(Collider other)
+    void CheckAnswer()
     {
-        // Cek apakah objek yang keluar adalah HAtom
-        if (other.CompareTag("HAtom"))
+        int hydrogenCount = 0;
+        bool hIn14 = false;
+        bool hIn24 = false;
+        bool anyHInWrongSlot = false;
+        bool hasInvalidAtom = false;
+        debugText.text = ""; // kosongin dulu
+
+        foreach (var slot in allSlots)
         {
-            --hydrogenCount; // Kurangi jumlah HAtom yang terdeteksi
-            CheckMolecule(); // Periksa kembali setelah HAtom keluar
+            GameObject atom = slot.currentAtom;
+
+            if (atom != null)
+            {
+                debugText.text += $"{slot.name} tag: {atom.tag}\n";
+
+                if (atom.CompareTag("HAtom"))
+                {
+                    hydrogenCount++;
+
+                    if (slot.CompareTag("Atom14"))
+                        hIn14 = true;
+                    else if (slot.CompareTag("Atom24"))
+                        hIn24 = true;
+                    else
+                        anyHInWrongSlot = true;
+                }
+                else
+                {
+                    // atom bukan H → dianggap invalid
+                    hasInvalidAtom = true;
+                    debugText.text += $"Invalid atom detected in {slot.name}: {atom.tag}\n";
+                }
+            }
         }
+
+        // Correct location jika:
+        // 1. Ada 2 H
+        // 2. H ada di 14 & 24
+        // 3. Tidak ada H di tempat lain
+        // 4. Tidak ada atom lain selain H
+        bool locationCorrect = (hydrogenCount == 2) && hIn14 && hIn24 && !anyHInWrongSlot && !hasInvalidAtom;
+
+        // Update UI
+        checkLocationText.text = locationCorrect ? "Correct" : "Incorrect";
+        checkAtomText.text = (hydrogenCount == 2 && !hasInvalidAtom) ? "Correct" : "Incorrect";
     }
-
-    private void CheckMolecule()
-    {
-        // Cek apakah ada tepat 2 HAtom
-        bool correctAtoms = hydrogenCount == 2;
-
-        // Cek apakah HAtom berada di lokasi yang benar
-        bool correctLocation = gameObject.CompareTag("Atom14") && gameObject.CompareTag("Atom24");
-
-        // Update UI berdasarkan hasil pemeriksaan
-        checkAtomText.text = correctAtoms ? "Correct" : "Incorrect";
-        checkLocationText.text = correctLocation ? "Correct" : "Incorrect";
-    }*/
 }
+
