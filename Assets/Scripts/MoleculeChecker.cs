@@ -8,10 +8,7 @@ public class MoleculeChecker : MonoBehaviour
     public AtomSlotTrigger[] allSlots;  // Assign semua 26 slot di sini
     public TMP_Text checkAtomText;
     public TMP_Text checkLocationText;
-    public TMP_Text debugText;
-
-    public string targetTag1 = "Atom14";
-    public string targetTag2 = "Atom24";
+    public TMP_Text statusText;
 
     void Update()
     {
@@ -23,9 +20,10 @@ public class MoleculeChecker : MonoBehaviour
         int hydrogenCount = 0;
         bool hIn14 = false;
         bool hIn24 = false;
+        bool hIn10 = false;  // Tambahkan pengecekan untuk Atom10
+        bool hIn22 = false;  // Tambahkan pengecekan untuk Atom22
         bool anyHInWrongSlot = false;
         bool hasInvalidAtom = false;
-        debugText.text = ""; // kosongin dulu
 
         foreach (var slot in allSlots)
         {
@@ -33,8 +31,6 @@ public class MoleculeChecker : MonoBehaviour
 
             if (atom != null)
             {
-                debugText.text += $"{slot.name} tag: {atom.tag}\n";
-
                 if (atom.CompareTag("HAtom"))
                 {
                     hydrogenCount++;
@@ -43,28 +39,42 @@ public class MoleculeChecker : MonoBehaviour
                         hIn14 = true;
                     else if (slot.CompareTag("Atom24"))
                         hIn24 = true;
+                    else if (slot.CompareTag("Atom10"))  // Cek Atom10
+                        hIn10 = true;
+                    else if (slot.CompareTag("Atom22"))  // Cek Atom22
+                        hIn22 = true;
                     else
                         anyHInWrongSlot = true;
                 }
                 else
                 {
-                    // atom bukan H → dianggap invalid
                     hasInvalidAtom = true;
-                    debugText.text += $"Invalid atom detected in {slot.name}: {atom.tag}\n";
                 }
             }
         }
 
-        // Correct location jika:
-        // 1. Ada 2 H
-        // 2. H ada di 14 & 24
-        // 3. Tidak ada H di tempat lain
-        // 4. Tidak ada atom lain selain H
-        bool locationCorrect = (hydrogenCount == 2) && hIn14 && hIn24 && !anyHInWrongSlot && !hasInvalidAtom;
+        // Cek jika ada H di Atom14 dan Atom24, atau di Atom10 dan Atom22
+        bool locationCorrect = ((hIn14 && hIn24) || (hIn10 && hIn22)) && !anyHInWrongSlot;
+        bool atomCorrect = (hydrogenCount == 2) && !hasInvalidAtom;
 
-        // Update UI
+        // Update Location Text
         checkLocationText.text = locationCorrect ? "Correct" : "Incorrect";
-        checkAtomText.text = (hydrogenCount == 2 && !hasInvalidAtom) ? "Correct" : "Incorrect";
+        checkLocationText.color = locationCorrect ? Color.green : Color.red;
+
+        // Update Atom Text
+        checkAtomText.text = atomCorrect ? "Correct" : "Incorrect";
+        checkAtomText.color = atomCorrect ? Color.green : Color.red;
+
+        if (locationCorrect && atomCorrect)
+        {
+            statusText.text = "Passed";
+            statusText.color = Color.green;
+        }
+        else
+        {
+            statusText.text = "On Going";
+            statusText.color = new Color(0.9607844f, 0.6431373f, 0.03137255f); // Orange
+        }
     }
 }
 
