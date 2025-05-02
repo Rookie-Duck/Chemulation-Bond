@@ -1,56 +1,52 @@
 using Oculus.Interaction.HandGrab;
 using Oculus.Interaction;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Trashcan : MonoBehaviour
 {
-    public GameObject objectPrefab; // Reference to the prefab you want to instantiate
-
     private void OnTriggerEnter(Collider other)
     {
-        // Disable the child object "ISDK_HandGrabInteraction" if it exists
-        Transform childTransform = other.transform.Find("ISDK_HandGrabInteraction");
-        if (childTransform != null)
-        {
-            childTransform.gameObject.SetActive(false); // Disable the child object
-        }
+        if (!IsAtom(other.gameObject)) return;
 
-        // Disable all relevant interaction components if they exist
-        DisableComponents(other);
+        // Disable interaction components to avoid breaking hand grab system
+        DisableInteraction(other.gameObject);
 
-        // Start a coroutine to handle destruction and instantiation
-        StartCoroutine(HandleDestruction(other.gameObject));
+        // Delay a bit before destroying to let the system process release events
+        StartCoroutine(DestroyAfterFrame(other.gameObject));
     }
 
-    private void DisableComponents(Collider other)
+    private bool IsAtom(GameObject obj)
     {
-        var grabbable = other.GetComponent<Grabbable>();
-        if (grabbable != null)
-        {
-            grabbable.enabled = false;
-        }
+        string[] validTags = {
+            "SAtom", "XeAtom", "NAtom", "OAtom", "KAtom", "ClAtom",
+            "FAtom", "HAtom", "BAtom", "BrAtom", "CAtom"
+        };
 
-        var handGrabInteractable = other.GetComponent<HandGrabInteractable>();
-        if (handGrabInteractable != null)
+        foreach (var tag in validTags)
         {
-            handGrabInteractable.enabled = false;
+            if (obj.CompareTag(tag)) return true;
         }
-
-        var grabInteractable = other.GetComponent<GrabInteractable>();
-        if (grabInteractable != null)
-        {
-            grabInteractable.enabled = false;
-        }
+        return false;
     }
 
-    private IEnumerator HandleDestruction(GameObject obj)
+    private void DisableInteraction(GameObject obj)
     {
-        yield return null; // Wait for the end of the frame
+        var grabbable = obj.GetComponent<Grabbable>();
+        if (grabbable != null) grabbable.enabled = false;
+
+        var handGrab = obj.GetComponent<HandGrabInteractable>();
+        if (handGrab != null) handGrab.enabled = false;
+
+        var grabInteractable = obj.GetComponent<GrabInteractable>();
+        if (grabInteractable != null) grabInteractable.enabled = false;
+
+        var handGrabChild = obj.transform.Find("ISDK_HandGrabInteraction");
+        if (handGrabChild != null) handGrabChild.gameObject.SetActive(false);
+    }
+
+    private System.Collections.IEnumerator DestroyAfterFrame(GameObject obj)
+    {
+        yield return new WaitForEndOfFrame();
         Destroy(obj);
-
-        // Optionally instantiate a new object if needed
-        Instantiate(objectPrefab, transform.position, transform.rotation);
     }
 }
